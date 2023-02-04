@@ -273,15 +273,16 @@ impl Grid {
     pub fn render_gif_frame(&self, tile_size: u16) -> gif::Frame<'static> {
         let width = self.width as u16 * tile_size;
         let height = self.height as u16 * tile_size;
-        let mut pixels = Vec::new();
+        let mut pixels = vec![0; width as usize * height as usize];
+        let mut cursor = 0;
         for y in 0..self.height {
             for _ in 0..tile_size {
                 for x in 0..self.width {
                     let test_pt = Point { x, y };
                     let index = self[test_pt].palette_index();
-                    for _ in 0..tile_size {
-                        pixels.push(index);
-                    }
+                    let dst_range = cursor..(cursor + tile_size as usize);
+                    pixels[dst_range].fill(index);
+                    cursor += tile_size as usize;
                 }
             }
         }
