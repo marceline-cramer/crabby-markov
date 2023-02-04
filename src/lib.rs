@@ -4,6 +4,8 @@ use std::ops::{Add, Index, IndexMut};
 use rand::seq::SliceRandom;
 use rand::Rng;
 
+pub mod node;
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct Point {
     pub x: usize,
