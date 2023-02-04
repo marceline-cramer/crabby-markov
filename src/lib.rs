@@ -275,8 +275,8 @@ mod tests {
 
     use rand::{rngs::SmallRng, SeedableRng};
 
-    fn make_rng() -> SmallRng {
-        SmallRng::seed_from_u64(0)
+    pub fn make_rng() -> SmallRng {
+        SmallRng::seed_from_u64(2)
     }
 
     #[test]
