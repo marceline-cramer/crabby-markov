@@ -8,6 +8,11 @@ Pure Rust [MarkovJunior](https://github.com/mxgmn/MarkovJunior) port.
 # TODO
 
 - [ ] XML parsing
+- [ ] use example models in XML for unit tests
+- [ ] CLI
+- [ ] optimized pattern matching
+- [ ] non-enum `Symbol` for arbitrary symbol defs
+- [ ] non-panicking errors
 - [ ] `origin` and `values` for init
 - [ ] `p` properties for probability weighting
 - [ ] `map` nodes
