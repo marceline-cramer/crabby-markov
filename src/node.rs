@@ -343,7 +343,7 @@ mod tests {
             ],
         });
 
-        let grid = Grid::new(256, 256);
+        let grid = Grid::new(64, 64);
         let state = model.make_state();
         render_gif("nystrom-dungeon.gif", grid, state);
     }
