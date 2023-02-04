@@ -59,20 +59,21 @@ impl Symbol {
         0x00, 0x87, 0x51, // Emerald
     ];
 
+    pub fn from_char(c: char) -> Option<Self> {
+        match c {
+            'B' => Some(Symbol::Black),
+            'W' => Some(Symbol::White),
+            'R' => Some(Symbol::Red),
+            'G' => Some(Symbol::Green),
+            'U' => Some(Symbol::Blue),
+            'E' => Some(Symbol::Emerald),
+            '*' => None,
+            c => panic!("unrecognized symbol '{}'", c),
+        }
+    }
+
     pub fn from_string(string: &str) -> Vec<Option<Self>> {
-        string
-            .chars()
-            .map(|c| match c {
-                'B' => Some(Symbol::Black),
-                'W' => Some(Symbol::White),
-                'R' => Some(Symbol::Red),
-                'G' => Some(Symbol::Green),
-                'U' => Some(Symbol::Blue),
-                'E' => Some(Symbol::Emerald),
-                '*' => None,
-                c => panic!("unrecognized symbol '{}'", c),
-            })
-            .collect()
+        string.chars().map(|c| Self::from_char(c)).collect()
     }
 
     pub fn palette_index(&self) -> u8 {
@@ -130,14 +131,6 @@ impl<T: Clone + Default> GenericGrid<T> {
         }
     }
 
-    pub fn from_string(string: &[T]) -> Self {
-        Self {
-            grid: string.to_vec(),
-            width: string.len(),
-            height: 1,
-        }
-    }
-
     pub fn rotate_cw(&self) -> Self {
         let mut grid = Vec::with_capacity(self.width * self.height);
 
@@ -157,6 +150,41 @@ impl<T: Clone + Default> GenericGrid<T> {
 }
 
 pub type Pattern = GenericGrid<Option<Symbol>>;
+
+impl Pattern {
+    pub fn from_string(string: &str) -> Self {
+        let mut grid = Vec::new();
+        let mut width = 0;
+        let mut height = 1;
+        let mut row_len = 0;
+
+        for c in string.chars() {
+            if c == '/' {
+                if width == 0 {
+                    width = row_len;
+                } else if row_len != width {
+                    panic!("inconsistent row length");
+                }
+
+                height += 1;
+                row_len = 0;
+            } else {
+                grid.push(Symbol::from_char(c));
+                row_len += 1;
+            }
+        }
+
+        if width == 0 {
+            width = row_len;
+        }
+
+        Self {
+            grid,
+            width,
+            height,
+        }
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Rule {
@@ -181,8 +209,8 @@ impl Rule {
 
     pub fn from_strings(find: &str, replace: &str) -> Self {
         Self {
-            find: Pattern::from_string(&Symbol::from_string(find)),
-            replace: Pattern::from_string(&Symbol::from_string(replace)),
+            find: Pattern::from_string(find),
+            replace: Pattern::from_string(replace),
         }
     }
 }
