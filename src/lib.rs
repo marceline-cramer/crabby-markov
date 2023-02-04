@@ -37,6 +37,8 @@ pub enum Symbol {
     White,
     Red,
     Green,
+    Blue,
+    Emerald,
 }
 
 impl Default for Symbol {
@@ -54,6 +56,8 @@ impl Symbol {
                 'W' => Some(Symbol::White),
                 'R' => Some(Symbol::Red),
                 'G' => Some(Symbol::Green),
+                'U' => Some(Symbol::Blue),
+                'E' => Some(Symbol::Emerald),
                 '*' => None,
                 c => panic!("unrecognized symbol '{}'", c),
             })
@@ -169,10 +173,12 @@ impl Display for Grid {
         for row in self.grid.chunks(self.width) {
             for symbol in row.iter() {
                 let character = match symbol {
-                    Symbol::Black => ' ',
+                    Symbol::Black => 'B',
                     Symbol::White => 'W',
                     Symbol::Red => 'R',
                     Symbol::Green => 'G',
+                    Symbol::Blue => 'U',
+                    Symbol::Emerald => 'E',
                 };
 
                 string.push(character);
