@@ -274,11 +274,10 @@ mod tests {
                     rules: Rule::from_strings("UB", "UU").make_rotations(),
                     steps: Some(1),
                 }),
-                // deburr
-                /*All(AllNode {
-                    rules: Rule::from_strings("BU/UB", "U* **").make_rotations(),
+                All(AllNode {
+                    rules: Rule::from_strings("BU/UB", "U*/**").make_rotations(),
                     steps: None,
-                }),*/
+                }),
                 All(AllNode {
                     rules: Rule::from_strings("UB", "*G").make_rotations(),
                     steps: None,
