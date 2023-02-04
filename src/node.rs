@@ -302,8 +302,33 @@ mod tests {
         let mut state = model.make_state();
         let mut rng = crate::tests::make_rng();
 
+        let tile_size = 4;
+        let width = grid.width as u16 * tile_size;
+        let height = grid.height as u16 * tile_size;
+        let mut file = std::fs::File::create("river.gif").unwrap();
+        let mut encoder = gif::Encoder::new(&mut file, width, height, Symbol::PALETTE).unwrap();
+        encoder.set_repeat(gif::Repeat::Infinite).unwrap();
+
+        let mut frames = Vec::new();
+        let mut counter = 0;
         while state.step(&mut rng, &mut grid) {
             println!("Stepping...");
+
+            counter += 1;
+            if counter >= 64 {
+                counter = 0;
+                let mut frame = grid.render_gif_frame(tile_size);
+                frame.delay = 2;
+                frames.push(frame);
+            }
+        }
+
+        let mut frame = grid.render_gif_frame(tile_size);
+        frame.delay = 1000;
+        frames.push(frame);
+
+        for frame in frames {
+            encoder.write_frame(&frame).unwrap();
         }
 
         println!("{}", grid);
