@@ -237,6 +237,117 @@ impl Step for PrlState {
 mod tests {
     use super::*;
 
+    pub fn render_gif(filename: &str, mut grid: Grid, mut state: AnyState) {
+        let mut rng = crate::tests::make_rng();
+        let tile_size = 4;
+        let width = grid.width as u16 * tile_size;
+        let height = grid.height as u16 * tile_size;
+        let mut file = std::fs::File::create(filename).unwrap();
+        let mut encoder = gif::Encoder::new(&mut file, width, height, Symbol::PALETTE).unwrap();
+        encoder.set_repeat(gif::Repeat::Infinite).unwrap();
+
+        let mut frames = Vec::new();
+        let mut counter = 0;
+        while state.step(&mut rng, &mut grid) {
+            println!("Stepping...");
+
+            counter += 1;
+            if counter >= 64 {
+                counter = 0;
+                let mut frame = grid.render_gif_frame(tile_size);
+                frame.delay = 2;
+                frames.push(frame);
+            }
+        }
+
+        let mut frame = grid.render_gif_frame(tile_size);
+        frame.delay = 1000;
+        frames.push(frame);
+
+        for frame in frames {
+            encoder.write_frame(&frame).unwrap();
+        }
+
+        println!("{}", grid);
+    }
+
+    #[test]
+    fn nystrom_dungeon() {
+        use AnyNode::*;
+        let model = Sequence(SequenceNode {
+            children: vec![
+                One(OneNode {
+                    rules: vec![Rule::from_strings("B", "P")],
+                    steps: Some(1),
+                }),
+                All(AllNode {
+                    rules: Rule::from_strings("PBB", "**P").make_rotations(),
+                    steps: None,
+                }),
+                One(OneNode {
+                    rules: Rule::from_strings(
+                        "PBPBPBPBP/BBBBBBBBB/PBPBPBPBP/BBBBBBBBB/PBPBPBPBP/BBBBBBBBB/PBPBPBPBP",
+                        "WWWWWWWWW/WWWWWWWWW/WWWWWWWWW/WWWWWWWWW/WWWWWWWWW/WWWWWWWWW/WWWWWWWWW",
+                    )
+                    .make_rotations(),
+                    steps: None,
+                }),
+                Markov(MarkovNode {
+                    children: vec![
+                        One(OneNode {
+                            rules: Rule::from_strings("RBP", "GGR").make_rotations(),
+                            steps: None,
+                        }),
+                        One(OneNode {
+                            rules: Rule::from_strings("GGR", "RWW").make_rotations(),
+                            steps: None,
+                        }),
+                        One(OneNode {
+                            rules: vec![Rule::from_strings("P", "R")],
+                            steps: None,
+                        }),
+                    ],
+                }),
+                One(OneNode {
+                    rules: vec![Rule::from_strings("R", "G")],
+                    steps: Some(1),
+                }),
+                All(AllNode {
+                    rules: vec![Rule::from_strings("R", "W")],
+                    steps: None,
+                }),
+                Markov(MarkovNode {
+                    children: vec![
+                        All(AllNode {
+                            rules: Rule::from_strings("GWW", "**G").make_rotations(),
+                            steps: None,
+                        }),
+                        One(OneNode {
+                            rules: Rule::from_strings("GBW", "*WG").make_rotations(),
+                            steps: None,
+                        }),
+                    ],
+                }),
+                One(OneNode {
+                    rules: Rule::from_strings("GBG", "*W*").make_rotations(),
+                    steps: Some(5),
+                }),
+                One(OneNode {
+                    rules: vec![Rule::from_strings("G", "W")],
+                    steps: None,
+                }),
+                All(AllNode {
+                    rules: Rule::from_strings("BBB/BWB", "BBB/BBB").make_rotations(),
+                    steps: None,
+                }),
+            ],
+        });
+
+        let grid = Grid::new(256, 256);
+        let state = model.make_state();
+        render_gif("nystrom-dungeon.gif", grid, state);
+    }
+
     #[test]
     fn river() {
         use AnyNode::*;
@@ -297,39 +408,8 @@ mod tests {
             ],
         });
 
-        let mut grid = Grid::new(128, 128);
-        let mut state = model.make_state();
-        let mut rng = crate::tests::make_rng();
-
-        let tile_size = 4;
-        let width = grid.width as u16 * tile_size;
-        let height = grid.height as u16 * tile_size;
-        let mut file = std::fs::File::create("river.gif").unwrap();
-        let mut encoder = gif::Encoder::new(&mut file, width, height, Symbol::PALETTE).unwrap();
-        encoder.set_repeat(gif::Repeat::Infinite).unwrap();
-
-        let mut frames = Vec::new();
-        let mut counter = 0;
-        while state.step(&mut rng, &mut grid) {
-            println!("Stepping...");
-
-            counter += 1;
-            if counter >= 64 {
-                counter = 0;
-                let mut frame = grid.render_gif_frame(tile_size);
-                frame.delay = 2;
-                frames.push(frame);
-            }
-        }
-
-        let mut frame = grid.render_gif_frame(tile_size);
-        frame.delay = 1000;
-        frames.push(frame);
-
-        for frame in frames {
-            encoder.write_frame(&frame).unwrap();
-        }
-
-        println!("{}", grid);
+        let grid = Grid::new(128, 128);
+        let state = model.make_state();
+        render_gif("river.gif", grid, state);
     }
 }
