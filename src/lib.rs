@@ -50,6 +50,15 @@ impl Default for Symbol {
 }
 
 impl Symbol {
+    pub const PALETTE: &[u8] = &[
+        0x00, 0x00, 0x00, // Black
+        0xff, 0xf1, 0x38, // White
+        0xff, 0x00, 0x4D, // Red
+        0x00, 0xe4, 0x36, // Green
+        0x29, 0xad, 0xff, // Blue
+        0x00, 0x87, 0x51, // Emerald
+    ];
+
     pub fn from_string(string: &str) -> Vec<Option<Self>> {
         string
             .chars()
@@ -64,6 +73,18 @@ impl Symbol {
                 c => panic!("unrecognized symbol '{}'", c),
             })
             .collect()
+    }
+
+    pub fn palette_index(&self) -> u8 {
+        use Symbol::*;
+        match self {
+            Black => 0,
+            White => 1,
+            Red => 2,
+            Green => 3,
+            Blue => 4,
+            Emerald => 5,
+        }
     }
 }
 
