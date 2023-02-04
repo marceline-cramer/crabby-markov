@@ -249,6 +249,7 @@ impl Grid {
         found
     }
 
+    #[deprecated]
     pub fn run_step(&mut self, rng: &mut impl Rng, step: &Step) -> bool {
         let mut matched = Vec::new();
 
