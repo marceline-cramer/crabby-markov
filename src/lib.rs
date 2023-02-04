@@ -41,6 +41,7 @@ pub enum Symbol {
     Green,
     Blue,
     Emerald,
+    Purple,
 }
 
 impl Default for Symbol {
@@ -57,6 +58,7 @@ impl Symbol {
         0x00, 0xe4, 0x36, // Green
         0x29, 0xad, 0xff, // Blue
         0x00, 0x87, 0x51, // Emerald
+        0x7e, 0x25, 0x53, // Purple,
     ];
 
     pub fn from_char(c: char) -> Option<Self> {
@@ -67,6 +69,7 @@ impl Symbol {
             'G' => Some(Symbol::Green),
             'U' => Some(Symbol::Blue),
             'E' => Some(Symbol::Emerald),
+            'P' => Some(Symbol::Purple),
             '*' => None,
             c => panic!("unrecognized symbol '{}'", c),
         }
@@ -85,6 +88,7 @@ impl Symbol {
             Green => 3,
             Blue => 4,
             Emerald => 5,
+            Purple => 6,
         }
     }
 }
@@ -230,6 +234,7 @@ impl Display for Grid {
                     Symbol::Green => 'G',
                     Symbol::Blue => 'U',
                     Symbol::Emerald => 'E',
+                    Symbol::Purple => 'P',
                 };
 
                 string.push(character);
