@@ -2,6 +2,9 @@
 
 Pure Rust [MarkovJunior](https://github.com/mxgmn/MarkovJunior) port.
 
+![River example model](/assets/river.gif)
+![Nystrom Dungeon example model](/assets/nystrom-dungeon.gif)
+
 # TODO
 
 - [ ] XML parsing
